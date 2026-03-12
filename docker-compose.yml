@@ -1,0 +1,32 @@
+services:
+  mongodb:
+    image: mongo:7
+    restart: unless-stopped
+    ports:
+      - "27017:27017"   # optional, so you can connect from host
+    volumes:
+      - mongo-data:/data/db
+
+  backend:
+    build: ./survey-app
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongodb
+    environment:
+      - ASPNETCORE_URLS=http://+:5000
+      - MONGODB_CONNECTION_STRING=mongodb://mongodb:27017
+      - MONGODB_DATABASE_NAME=SurveyDB
+      - MONGODB_SURVEYS_COLLECTION=Surveys
+      - MONGODB_USERS_COLLECTION=Users
+      - SECRET=this-is-a-secure-key-at-least-16-bytes
+
+  frontend:
+    build: ./survey-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  mongo-data:
