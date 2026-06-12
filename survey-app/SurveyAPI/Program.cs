@@ -25,7 +25,7 @@ builder.Services.AddCors(options =>
 // if no connection string is set and localhost isn't reachable, launch an
 // embedded MongoDB instance (Mongo2Go). This allows running the API
 // locally without installing MongoDB or passing in a URI.
-string connectionString = Environment.GetEnvironmentVariable("MONGODB_CONNECTION_STRING");
+string? connectionString = Environment.GetEnvironmentVariable("MONGODB_CONNECTION_STRING");
 Mongo2Go.MongoDbRunner? mongoRunner = null;
 
 if (string.IsNullOrWhiteSpace(connectionString))
