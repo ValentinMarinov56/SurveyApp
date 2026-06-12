@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from 'react-router-dom';
 import surveyService from "../services/surveys";
 import TakeSurvey from "./TakeSurvey";
 import ShowSurvey from "./ShowSurvey";
@@ -75,7 +76,7 @@ const Survey = ({ survey, user, onRemoved }) => {
     return (
         <div className="card card-survey">
             <div className="card-body">
-                <h5 className="card-title survey-title">{survey.title}</h5>
+                <h5 className="card-title survey-title"><Link to={`/surveys/${survey.id}`}>{survey.title}</Link></h5>
                 <h6 className="card-subtitle mb-2 text-muted survey-creator">Made by {survey.creator.username}</h6>
                 <div className="survey-actions mt-3">
                     <button className="btn btn-accent me-2" onClick={HandleSurveyTaking}>Take Survey</button>
