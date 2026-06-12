@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { LoginForm } from './components/LoginForm';
 import { CreateSurveyForm } from './components/CreateSurveyForm';
 import { SurveyGallery } from './components/SurveyGallery';
@@ -7,6 +6,9 @@ import { Logout } from './components/Logout';
 import surveyService from './services/surveys';
 import { SignUpForm } from './components/SignUpForm';
 import axios from 'axios';
+import './styles/main.css';
+import Toggable from './components/Toggable';
+
 export default function App() {
   const [user, setUser] = useState(null);
   useEffect(() => {
@@ -32,47 +34,50 @@ export default function App() {
     return () => axios.interceptors.response.eject(interceptor);
   }, [setUser]);
 
-  const Layout = ({ children }) => (
-    <>
-      <nav className="navbar navbar-expand navbar-custom">
-        <div className="container">
-          <span className="navbar-brand">Survey App</span>
-          <div className="nav-right">
-            {user ? <Logout setUser={setUser} /> : (
+  if (user === null) {
+    return (
+      <>
+        <nav className="navbar navbar-expand navbar-custom">
+          <div className="container">
+            <span className="navbar-brand">Survey App</span>
+            <div className="nav-right">
               <Toggable buttonLabel="Login">
                 <LoginForm setUser={setUser} />
               </Toggable>
-            )}
+            </div>
           </div>
-        </div>
-      </nav>
+        </nav>
 
-      <main className="app-main">
-        <div className="surveys-container">
-          {user && <h1 className="mb-3 text-center">Welcome, {user.username}</h1>}
-          {user && (
+        <main className="app-main">
+          <div className="surveys-container">
+            <SurveyGallery />
+          </div>
+        </main>
+      </>
+    );
+  }
+  else {
+    return (
+      <>
+        <nav className="navbar navbar-expand navbar-custom">
+          <div className="container">
+            <span className="navbar-brand">Survey App</span>
+            <div className="nav-right">
+              <Logout setUser={setUser} />
+            </div>
+          </div>
+        </nav>
+
+        <main className="app-main">
+          <div className="surveys-container">
+            <h1 className="mb-3 text-center">Welcome, {user.username}</h1>
             <Toggable buttonLabel="Create Survey">
               <CreateSurveyForm />
             </Toggable>
-          )}
-          {children}
-        </div>
-      </main>
-    </>
-  );
-
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Layout><SurveyGallery user={user} /></Layout>} />
-        <Route path="/surveys/:id" element={<Layout><SurveyPage user={user} /></Layout>} />
-      </Routes>
-    </BrowserRouter>
-  );
-}
-
-// lazy import SurveyPage to avoid circular issues
-import SurveyPage from './components/SurveyPage';
+            <SurveyGallery />
+          </div>
+        </main>
+      </>
     );
   }
 }

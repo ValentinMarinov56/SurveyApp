@@ -10,7 +10,7 @@ public interface ISurveyService
     Task<SurveyWithCreatorDto?> GetSurveyAsync(int id);
     Task<Survey> CreateSurveyAsync(Survey survey);
     Task<bool> UpdateSurveyAsync(int id, Survey survey);
-    Task<bool> DeleteSurveyAsync(int id, int userId);
+    Task<bool> DeleteSurveyAsync(int id);
 }
 
 public class SurveyService : ISurveyService
@@ -84,28 +84,9 @@ public class SurveyService : ISurveyService
         return result.ModifiedCount > 0;
     }
 
-    public async Task<bool> DeleteSurveyAsync(int id, int userId)
+    public async Task<bool> DeleteSurveyAsync(int id)
     {
-        var survey = await _surveysCollection.Find(s => s.Id == id).FirstOrDefaultAsync();
-        if (survey == null)
-            return false;
-
-        if (survey.CreatorId != userId)
-            return false;
-
         var result = await _surveysCollection.DeleteOneAsync(s => s.Id == id);
-
-        if (result.DeletedCount > 0)
-        {
-            var user = await _usersCollection.Find(u => u.Id == survey.CreatorId).FirstOrDefaultAsync();
-            if (user != null && user.Surveys.Contains(id))
-            {
-                user.Surveys.Remove(id);
-                await _usersCollection.ReplaceOneAsync(u => u.Id == user.Id, user);
-            }
-            return true;
-        }
-
-        return false;
+        return result.DeletedCount > 0;
     }
 }
