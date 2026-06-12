@@ -50,7 +50,7 @@ export default function App() {
 
         <main className="app-main">
           <div className="surveys-container">
-            <SurveyGallery />
+            <SurveyGallery user={user} />
           </div>
         </main>
       </>
@@ -74,7 +74,7 @@ export default function App() {
             <Toggable buttonLabel="Create Survey">
               <CreateSurveyForm />
             </Toggable>
-            <SurveyGallery />
+            <SurveyGallery user={user} />
           </div>
         </main>
       </>

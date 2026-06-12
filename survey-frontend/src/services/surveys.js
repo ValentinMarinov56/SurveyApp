@@ -27,4 +27,10 @@ const updateSurvey = async (id, surveyData) => {
     return response.data;
 } // non-logged in users can take surveys, that's intentional
 
-export default { getAll, getSurveyById, createSurvey, updateSurvey, setToken }
+const deleteSurvey = async (id) => {
+    const config = token ? { headers: { Authorization: token } } : undefined
+    const response = await axios.delete(`${baseUrl}/${id}`, config);
+    return response.status === 204;
+}
+
+export default { getAll, getSurveyById, createSurvey, updateSurvey, deleteSurvey, setToken }
