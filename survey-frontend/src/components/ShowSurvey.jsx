@@ -16,11 +16,13 @@ export default function ShowSurvey({survey, onClose}) {
                      ))}
                 </fieldset>
             ))}
-            <div className="d-flex justify-content-center mt-3">
-              <button className="btn btn-outline-light" onClick={onClose}>
-                  Close Survey
-              </button>
-            </div>
+            {onClose && (
+              <div className="d-flex justify-content-center mt-3">
+                <button className="btn btn-outline-light" onClick={onClose}>
+                    Close Survey
+                </button>
+              </div>
+            )}
         </div>
     );
 }
