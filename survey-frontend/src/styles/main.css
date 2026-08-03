@@ -28,6 +28,82 @@ body {
   border-bottom: 1px solid #404040;
 }
 
+.navbar-split-layout {
+  display: grid;
+  grid-template-columns: 280px minmax(320px, 1fr) 280px;
+  align-items: center;
+  gap: 1rem;
+}
+
+.navbar-left,
+.navbar-center,
+.navbar-right {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-center {
+  justify-content: center;
+  margin: 0;
+  width: 100%;
+}
+
+.navbar-right {
+  justify-content: flex-end;
+  gap: 0.35rem;
+  flex-wrap: nowrap;
+  margin-left: 0;
+  width: 280px;
+}
+
+.navbar-search-form {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.navbar-search-input {
+  min-width: 220px;
+  max-width: 320px;
+  background: transparent;
+  color: #fff;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  padding: 2px 8px;
+  appearance: none;
+  -webkit-appearance: none;
+  -webkit-box-shadow: none;
+  -moz-appearance: none;
+  text-align: center;
+}
+
+.navbar-search-input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.navbar-search-button {
+  background: transparent;
+  border: none;
+  color: #fff;
+  padding: 0 4px;
+  outline: none;
+  box-shadow: none;
+}
+
+.navbar-search-button:hover,
+.navbar-search-button:focus {
+  background: transparent;
+  color: #fff;
+  box-shadow: none;
+  outline: none;
+}
+
 /* Keep navbar fixed at top so title doesn't shift when dropdowns open */
 .navbar-custom {
   position: sticky;
@@ -94,8 +170,17 @@ body {
   margin: 0 auto 1rem;
 }
 
-.nav-right .btn {
-  min-width: 90px;
+.navbar-right .btn {
+  min-width: 84px;
+  padding: 0.35rem 0.75rem !important;
+  font-size: 0.82rem !important;
+  line-height: 1.2;
+}
+
+.navbar-right .btn:focus,
+.navbar-right .btn:focus-visible {
+  box-shadow: 0 0 0 1px rgba(100, 181, 246, 0.45);
+  outline: none;
 }
 
 /* Main layout - center content and give surveys primary width */

@@ -1,16 +1,29 @@
 import { useState } from "react";
 import surveyService from "../services/surveys";
 
-export function CreateSurveyForm() {
+export function CreateSurveyForm({ onCreated }) {
   const [survey, setSurvey] = useState({
     Title: "",
     Questions: [],
   });
+
+  const getQuestionType = (question) => {
+    const rawType = question.QuestionType ?? question.questionType ?? "Single";
+    return String(rawType).toLowerCase() === "multiple" ? "Multiple" : "Single";
+  };
+
+  const getMaxSelections = (question) => {
+    const rawValue = question.MaxSelections ?? question.maxSelections;
+    if (rawValue === null || rawValue === undefined || rawValue === "") {
+      return 1;
+    }
+    return Number(rawValue);
+  };
   
   const addQuestion = () => {
     setSurvey({
       ...survey,
-      Questions: [...survey.Questions, { Text: "", Options: [] }],
+      Questions: [...survey.Questions, { Text: "", Options: [], QuestionType: "Single", MaxSelections: 1 }],
     });
   };
 
@@ -30,13 +43,33 @@ export function CreateSurveyForm() {
     setSurvey({ ...survey, Questions: updatedQuestions });
   };
 
+  const handleQuestionTypeChange = (index, value) => {
+    const updatedQuestions = survey.Questions.map((question, i) => {
+      if (i !== index) {
+        return question;
+      }
+
+      return {
+        ...question,
+        QuestionType: value,
+        MaxSelections: value === "Multiple" ? (question.MaxSelections ?? question.maxSelections ?? 1) : 1,
+      };
+    });
+
+    setSurvey({ ...survey, Questions: updatedQuestions });
+  };
+
   const handleSurveySumbission = async () => {
     if (!validateSurvey()) {
       return;
     }
     try {
       await surveyService.createSurvey(survey);
-      window.location.reload();
+      if (onCreated) {
+        onCreated();
+      } else {
+        window.location.reload();
+      }
     } catch (err) {
         console.error(err);
     }
@@ -56,16 +89,26 @@ export function CreateSurveyForm() {
         alert('Question text cannot be empty and must be at most 200 characters.');
         return;
       }
-        if (question.Options.length === 0 || question.Options.length > 10) {
+      if (question.Options.length === 0 || question.Options.length > 10) {
         alert('Each question must have at least one option and at most 10 options.');
         return;
       }
+
+      const questionType = getQuestionType(question);
+      if (questionType === 'Multiple') {
+        const maxSelections = Number(getMaxSelections(question));
+        if (!Number.isInteger(maxSelections) || maxSelections < 1 || maxSelections > question.Options.length) {
+          alert('For multiple-answer questions, max selections must be a whole number between 1 and the number of options.');
+          return;
+        }
+      }
+
       for (const option of question.Options) {
         if (!option.Text.trim() || option.Text.length > 100) {
           alert('Option text cannot be empty and must be at most 100 characters.');
           return;
-            }
         }
+      }
     }
     return true;
   }
@@ -92,6 +135,27 @@ export function CreateSurveyForm() {
                         />
                     </label>
                     
+                    <br />
+                    <label>
+                        Answer Type:
+                        <select value={getQuestionType(question)} onChange={(e) => handleQuestionTypeChange(index, e.target.value)}>
+                            <option value="Single">Single answer</option>
+                            <option value="Multiple">Multiple answers</option>
+                        </select>
+                    </label>
+
+                    {getQuestionType(question) === "Multiple" && (
+                        <label>
+                            Max selections:
+                            <input
+                                type="number"
+                                min="1"
+                                max="10"
+                                value={getMaxSelections(question)}
+                                onChange={(e) => handleQuestionChange(index, "MaxSelections", Number(e.target.value))}
+                            />
+                        </label>
+                    )}
                     <br />
                     <label>
                         Options:
