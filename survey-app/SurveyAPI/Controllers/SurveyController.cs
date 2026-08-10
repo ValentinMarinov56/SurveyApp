@@ -44,6 +44,16 @@ public class SurveyController : ControllerBase
         if (idClaim == null || !int.TryParse(idClaim.Value, out int userId))
             return Unauthorized("Invalid token: User ID claim not found or invalid.");
 
+        survey ??= new Survey();
+        survey.Title ??= string.Empty;
+        survey.Questions ??= new List<Question>();
+        foreach (var question in survey.Questions)
+        {
+            question.Options ??= new List<Option>();
+            question.Text ??= string.Empty;
+            question.QuestionType ??= "Single";
+        }
+
         survey.CreatorId = userId;
         var createdSurvey = await _surveyService.CreateSurveyAsync(survey);
         return CreatedAtAction(nameof(GetSurvey), new { id = createdSurvey.Id }, createdSurvey);

@@ -79,7 +79,13 @@ public class SurveyService : ISurveyService
 
     public async Task<bool> UpdateSurveyAsync(int id, Survey survey)
     {
+        var existingSurvey = await _surveysCollection.Find(s => s.Id == id).FirstOrDefaultAsync();
+        if (existingSurvey == null)
+            return false;
+
         survey.Id = id;
+        survey.CreatorId = existingSurvey.CreatorId;
+
         var result = await _surveysCollection.ReplaceOneAsync(s => s.Id == id, survey);
         return result.ModifiedCount > 0;
     }

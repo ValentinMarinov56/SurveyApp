@@ -92,7 +92,11 @@ builder.Services.AddAuthentication(options =>
 });
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    });
 builder.Services.AddOpenApi();
 var app = builder.Build();
 
