@@ -16,7 +16,7 @@ html, body, #root {
 }
 
 body {
-  background-color: var(--bg) !important;
+  background: linear-gradient(180deg, var(--bg) 0%, #8A6590 100%) fixed no-repeat;
   color: #e6e6e6;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -106,9 +106,16 @@ body {
 
 /* Keep navbar fixed at top so title doesn't shift when dropdowns open */
 .navbar-custom {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
   z-index: 1020;
+}
+
+.app-main {
+  padding-top: 72px;
 }
 
 .navbar-brand {
@@ -175,6 +182,7 @@ body {
   padding: 0.35rem 0.75rem !important;
   font-size: 0.82rem !important;
   line-height: 1.2;
+  white-space: nowrap;
 }
 
 .navbar-right .btn:focus,
@@ -188,7 +196,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 2.5rem 1rem;
+  padding: calc(72px + 2.5rem) 1rem 1rem;
   min-height: calc(100vh - 72px);
 }
 
@@ -226,6 +234,17 @@ body {
   margin-bottom: 0.6rem !important;
 }
 
+.survey-creator a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.survey-creator a:hover,
+.survey-creator a:focus {
+  color: var(--accent);
+  text-decoration: none;
+}
+
 /* Center view result content and ensure actions are centered */
 .survey-view {
   background-color: var(--surface);
@@ -244,10 +263,22 @@ body {
 
 /* Make survey card title different from navbar-brand */
 .survey-title {
-  color: #ffd479;
+  color: #8A6590;
   font-weight: 700;
   font-family: 'Georgia', 'Times New Roman', serif;
   font-size: 3.5rem;
+}
+
+.survey-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.survey-title a:hover,
+.survey-title a:focus {
+  color: inherit;
+  text-decoration: none;
+}
   margin-bottom: .25rem;
 }
 
@@ -409,7 +440,7 @@ select.form-control {
 /* Small screens adjustments */
 @media (max-width: 768px) {
   .nav-right { margin-left: 0; justify-content: center; }
-  .app-main { padding: 1rem; }
+  .app-main { padding: calc(72px + 1rem) 1rem 1rem; }
   .surveys-container { padding: 0 0.5rem; }
 }
 
@@ -453,7 +484,6 @@ html, body {
 }
 
 body {
-  background-color: #2a2a2a;
   color: #e0e0e0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.6;

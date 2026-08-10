@@ -59,7 +59,7 @@ export default function SurveyPage({ user }) {
       </div>
 
       <h2 className="text-center">{survey.title}</h2>
-      <h5 className="text-center text-muted">
+      <h5 className="text-center text-muted survey-creator">
         By <Link to={`/users/${survey.creator?.id}`}>{survey.creator?.username}</Link>
       </h5>
       <p className="text-center">{survey.description}</p>
