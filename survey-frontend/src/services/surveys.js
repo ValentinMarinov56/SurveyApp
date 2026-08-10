@@ -1,9 +1,22 @@
 import axios from "axios";
 const baseUrl = '/api/survey';
+
 let token = null;
 
 const setToken = (newToken) => {
-    token = 'Bearer ' + newToken;
+    token = newToken ? `${newToken}`.replace(/^Bearer\s+/i, '') : null;
+}
+
+const getAuthHeader = () => {
+    const storedUser = window.localStorage.getItem('loggedSurveyappUser');
+    const parsedUser = storedUser ? JSON.parse(storedUser) : null;
+    const currentToken = token || parsedUser?.token || parsedUser?.Token || parsedUser?.accessToken;
+
+    if (!currentToken) {
+        return undefined;
+    }
+
+    return { Authorization: `Bearer ${currentToken}`.replace(/^Bearer\s+/i, 'Bearer ') };
 }
 
 const getAll = async () => {
@@ -17,7 +30,8 @@ const getSurveyById = async (id) => {
 }
 
 const createSurvey = async (surveyData) => {
-    const config = token ? { headers: { Authorization: token } } : undefined
+    const headers = getAuthHeader();
+    const config = headers ? { headers } : undefined;
     const response = await axios.post(baseUrl, surveyData, config);
     return response.data;
 }
@@ -28,7 +42,8 @@ const updateSurvey = async (id, surveyData) => {
 } // non-logged in users can take surveys, that's intentional
 
 const deleteSurvey = async (id) => {
-    const config = token ? { headers: { Authorization: token } } : undefined
+    const headers = getAuthHeader();
+    const config = headers ? { headers } : undefined;
     const response = await axios.delete(`${baseUrl}/${id}`, config);
     return response.status === 204;
 }

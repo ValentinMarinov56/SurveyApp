@@ -14,10 +14,13 @@ export function LoginForm({ setUser }) {
       const user = await loginService.login({
         username, password
       });
-      window.localStorage.setItem('loggedSurveyappUser', JSON.stringify(user));
-      surveyService.setToken(user.token);
-      //console.log(user.token); // remove later
-      setUser(user);
+      const authUser = {
+        ...user,
+        token: user.token || user.Token || user.accessToken
+      };
+      window.localStorage.setItem('loggedSurveyappUser', JSON.stringify(authUser));
+      surveyService.setToken(authUser.token);
+      setUser(authUser);
       setUsername('');
       setPassword('');
       //console.log('logged in');

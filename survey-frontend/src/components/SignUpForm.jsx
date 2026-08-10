@@ -1,6 +1,7 @@
 import { use, useState } from 'react';
 import signupService from '../services/signup';
 import loginService from '../services/login';
+import surveyService from '../services/surveys';
 
 export function SignUpForm({ setUser, onCancel }) {
   const [username, setUsername] = useState('');
@@ -23,8 +24,13 @@ export function SignUpForm({ setUser, onCancel }) {
         username: createdUser.username,
         password: password
       });
-      window.localStorage.setItem('loggedSurveyappUser', JSON.stringify(user));
-      setUser(user);
+      const authUser = {
+        ...user,
+        token: user.token || user.Token || user.accessToken
+      };
+      window.localStorage.setItem('loggedSurveyappUser', JSON.stringify(authUser));
+      surveyService.setToken(authUser.token);
+      setUser(authUser);
       window.location.reload();
     } catch (error) {
       //console.log('failed signing up');
