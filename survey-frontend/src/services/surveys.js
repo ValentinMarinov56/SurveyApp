@@ -19,13 +19,18 @@ const getAuthHeader = () => {
     return { Authorization: `Bearer ${currentToken}`.replace(/^Bearer\s+/i, 'Bearer ') };
 }
 
+const getConfig = () => {
+    const headers = getAuthHeader();
+    return headers ? { headers } : undefined;
+}
+
 const getAll = async () => {
-    const response = await axios.get(baseUrl);
+    const response = await axios.get(baseUrl, getConfig());
     return response.data;
 }
 
 const getSurveyById = async (id) => {
-    const response = await axios.get(`${baseUrl}/${id}`);
+    const response = await axios.get(`${baseUrl}/${id}`, getConfig());
     return response.data;
 }
 
@@ -37,7 +42,7 @@ const createSurvey = async (surveyData) => {
 }
 
 const updateSurvey = async (id, surveyData) => {
-    const response = await axios.put(`${baseUrl}/${id}`, surveyData);
+    const response = await axios.put(`${baseUrl}/${id}`, surveyData, getConfig());
     return response.data;
 } // non-logged in users can take surveys, that's intentional
 

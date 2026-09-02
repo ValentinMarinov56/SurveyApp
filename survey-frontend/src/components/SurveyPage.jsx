@@ -65,7 +65,13 @@ export default function SurveyPage({ user }) {
       <p className="text-center">{survey.description}</p>
 
       <div className="mt-3 mb-3 d-flex justify-content-center gap-2">
-        <button className="btn btn-accent" onClick={() => setShowTakeSurvey(true)}>Take Survey</button>
+        <button
+          className="btn btn-accent"
+          onClick={() => setShowTakeSurvey(true)}
+          disabled={survey.TakePermission === "NeedsProfile" && !user}
+        >
+          Take Survey
+        </button>
         <button className="btn btn-outline-light" onClick={handleShare}>{shareLabel}</button>
         {user && survey.creator?.id === user.userId && (
           <button
@@ -90,6 +96,9 @@ export default function SurveyPage({ user }) {
           </button>
         )}
       </div>
+      {survey.TakePermission === "NeedsProfile" && !user && (
+        <p className="text-center text-muted">Login is required to take this survey.</p>
+      )}
 
       {!showTakeSurvey && <ShowSurvey survey={survey} />}
 

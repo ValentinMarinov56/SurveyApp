@@ -5,6 +5,8 @@ export function CreateSurveyForm({ onCreated }) {
   const [survey, setSurvey] = useState({
     Title: "",
     Questions: [],
+    ViewPermission: "All",
+    TakePermission: "All",
   });
 
   const getQuestionType = (question) => {
@@ -19,11 +21,27 @@ export function CreateSurveyForm({ onCreated }) {
     }
     return Number(rawValue);
   };
+
+  const getMinSelections = (question) => {
+    const rawValue = question.MinSelections ?? question.minSelections;
+    if (rawValue === null || rawValue === undefined || rawValue === "") {
+      return 1;
+    }
+    return Number(rawValue);
+  };
+
+  const getViewPermission = (surveyData) => {
+    return surveyData.ViewPermission ?? surveyData.viewPermission ?? "All";
+  };
+
+  const getTakePermission = (surveyData) => {
+    return surveyData.TakePermission ?? surveyData.takePermission ?? "All";
+  };
   
   const addQuestion = () => {
     setSurvey({
       ...survey,
-      Questions: [...survey.Questions, { Text: "", Options: [], QuestionType: "Single", MaxSelections: 1 }],
+      Questions: [...survey.Questions, { Text: "", Options: [], QuestionType: "Single", MinSelections: 1, MaxSelections: 1 }],
     });
   };
 
@@ -52,6 +70,7 @@ export function CreateSurveyForm({ onCreated }) {
       return {
         ...question,
         QuestionType: value,
+        MinSelections: value === "Multiple" ? (question.MinSelections ?? question.minSelections ?? 1) : 1,
         MaxSelections: value === "Multiple" ? (question.MaxSelections ?? question.maxSelections ?? 1) : 1,
       };
     });
@@ -76,8 +95,19 @@ export function CreateSurveyForm({ onCreated }) {
   }
 
   const validateSurvey = () => {
+    const viewPermission = getViewPermission(survey);
+    const takePermission = getTakePermission(survey);
+
     if (!survey.Title.trim() || survey.Title.length > 100) {
       alert('Survey title cannot be empty and must be at most 100 characters.');
+      return;
+    }
+    if (!['All', 'NeedsProfile', 'Owner'].includes(viewPermission)) {
+      alert('Invalid view permission selected.');
+      return;
+    }
+    if (!['All', 'NeedsProfile'].includes(takePermission)) {
+      alert('Invalid take permission selected.');
       return;
     }
     if (survey.Questions.length === 0 || survey.Questions.length > 20) {
@@ -96,9 +126,14 @@ export function CreateSurveyForm({ onCreated }) {
 
       const questionType = getQuestionType(question);
       if (questionType === 'Multiple') {
+        const minSelections = Number(getMinSelections(question));
         const maxSelections = Number(getMaxSelections(question));
-        if (!Number.isInteger(maxSelections) || maxSelections < 1 || maxSelections > question.Options.length) {
-          alert('For multiple-answer questions, max selections must be a whole number between 1 and the number of options.');
+        if (!Number.isInteger(minSelections) || minSelections < 1 || minSelections > question.Options.length) {
+          alert('For multiple-answer questions, min selections must be a whole number between 1 and the number of options.');
+          return;
+        }
+        if (!Number.isInteger(maxSelections) || maxSelections < minSelections || maxSelections > question.Options.length) {
+          alert('For multiple-answer questions, max selections must be a whole number between min selections and the number of options.');
           return;
         }
       }
@@ -123,6 +158,27 @@ export function CreateSurveyForm({ onCreated }) {
                     onChange={(e) => setSurvey({ ...survey, Title: e.target.value })}
                 />
             </label>
+            <label>
+                View permission:
+                <select
+                  value={getViewPermission(survey)}
+                  onChange={(e) => setSurvey({ ...survey, ViewPermission: e.target.value })}
+                >
+                  <option value="All">All - everyone, no profile required</option>
+                  <option value="NeedsProfile">Needs profile - must be logged in to view</option>
+                  <option value="Owner">Owner - only the owner can view</option>
+                </select>
+            </label>
+            <label>
+                Take permission:
+                <select
+                  value={getTakePermission(survey)}
+                  onChange={(e) => setSurvey({ ...survey, TakePermission: e.target.value })}
+                >
+                  <option value="All">All - no profile needed</option>
+                  <option value="NeedsProfile">Needs profile - must be logged in to take</option>
+                </select>
+            </label>
             <h3>Questions</h3>
             {survey.Questions.map((question, index) => (
                 <div key={index} className="question-container">
@@ -145,16 +201,28 @@ export function CreateSurveyForm({ onCreated }) {
                     </label>
 
                     {getQuestionType(question) === "Multiple" && (
-                        <label>
-                            Max selections:
-                            <input
-                                type="number"
-                                min="1"
-                                max="10"
-                                value={getMaxSelections(question)}
-                                onChange={(e) => handleQuestionChange(index, "MaxSelections", Number(e.target.value))}
-                            />
-                        </label>
+                        <>
+                            <label>
+                                Min selections:
+                                <input
+                                    type="number"
+                                    min="1"
+                                    max={question.Options.length || 10}
+                                    value={getMinSelections(question)}
+                                    onChange={(e) => handleQuestionChange(index, "MinSelections", Number(e.target.value))}
+                                />
+                            </label>
+                            <label>
+                                Max selections:
+                                <input
+                                    type="number"
+                                    min={getMinSelections(question)}
+                                    max={question.Options.length || 10}
+                                    value={getMaxSelections(question)}
+                                    onChange={(e) => handleQuestionChange(index, "MaxSelections", Number(e.target.value))}
+                                />
+                            </label>
+                        </>
                     )}
                     <br />
                     <label>
