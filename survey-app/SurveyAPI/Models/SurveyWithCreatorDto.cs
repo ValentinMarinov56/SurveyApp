@@ -6,6 +6,8 @@ public class SurveyWithCreatorDto
     public required string Title { get; set; }
     public List<Question> Questions { get; set; } = new();
     public required UserDto Creator { get; set; }
+    public string ViewPermission { get; set; } = "All";
+    public string TakePermission { get; set; } = "All";
 }
 
 public class UserDto

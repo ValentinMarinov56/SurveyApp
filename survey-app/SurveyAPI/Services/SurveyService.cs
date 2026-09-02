@@ -38,7 +38,9 @@ public class SurveyService : ISurveyService
                 Id = survey.Id,
                 Title = survey.Title,
                 Questions = survey.Questions,
-                Creator = user != null ? new UserDto { Id = user.Id, Username = user.Username } : new UserDto { Id = 0, Username = "Unknown" }
+                Creator = user != null ? new UserDto { Id = user.Id, Username = user.Username } : new UserDto { Id = 0, Username = "Unknown" },
+                ViewPermission = survey.ViewPermission ?? "All",
+                TakePermission = survey.TakePermission ?? "All"
             });
         }
 
@@ -57,7 +59,9 @@ public class SurveyService : ISurveyService
             Id = survey.Id,
             Title = survey.Title,
             Questions = survey.Questions,
-            Creator = user != null ? new UserDto { Id = user.Id, Username = user.Username } : new UserDto { Id = 0, Username = "Unknown" }
+            Creator = user != null ? new UserDto { Id = user.Id, Username = user.Username } : new UserDto { Id = 0, Username = "Unknown" },
+            ViewPermission = survey.ViewPermission ?? "All",
+            TakePermission = survey.TakePermission ?? "All"
         };
     }
 
@@ -65,7 +69,7 @@ public class SurveyService : ISurveyService
     {
         var existingSurveys = await _surveysCollection.Find(_ => true).ToListAsync();
         survey.Id = existingSurveys.Count > 0 ? existingSurveys.Max(s => s.Id) + 1 : 1;
-        
+
         var user = await _usersCollection.Find(u => u.Id == survey.CreatorId).FirstOrDefaultAsync();
         if (user != null)
         {
